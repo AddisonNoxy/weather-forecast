@@ -15,12 +15,20 @@
         </form>
     </div>
     <div class="py-4 bg-slate-400 rounded my-4 w-11/12 mx-auto">
-        <div class="w-full py-4 bg-slate-500 border-2 border-solid border-black">
-        
+        <div class="w-full py-4 bg-slate-500 border-2 border-solid border-black px-10">
+            <p id="cityinfo" class="text-2xl"></p>
+            <div id="currentweather">
+                <p id="currentTemp"></p>
+                <p id="currentWind"></p>
+                <p id="currentHumid"></p>
+            </div>
+            <div id="weatherforecast" class="columns-5 border-black border-solid rounded text-white">
+
+            </div>
         </div>
-        <div class="w-6/12 bg-slate-500 border-2 border-solid border-black mx-auto text-center">
-            <p>Search History:</p>
-            <table id="search-history">
+        <div class="w-6/12 bg-slate-500 border-2 border-solid border-black mx-auto text-center mt-4">
+            <p >Search History:</p>
+            <table id="search-history" class="text-center">
 
             </table>
         </div>
