@@ -9,23 +9,32 @@ var currentWind = document.getElementById('currentWind');
 var currentHumid = document.getElementById('currentHumid');
 
 var cityHistory = localStorage.getItem("cityWeatherHistory");
-console.log(cityHistory);
 
 if (!cityHistory) {
     cityHistory = [];
 } else {
     cityHistory = cityHistory.split(",");
-    console.log(cityHistory);
+    
+    for (var i = 0; i < cityHistory.length -1; i++) {
 
-    
-    
-    for (var i = 0; i < cityHistory.length; i++) {
-        var newRow = document.createElement("tr");
-        var newData = document.createElement("td");
-        newData.textContent = cityHistory[i];
-        newRow.appendChild(newData);
-        searchHistory.appendChild(newRow);
+
+        var newButton = document.createElement("button");
+        newButton.id = cityHistory[i];
+        newButton.textContent = cityHistory[i];
+        newButton.className = "px-2 border-black border-solid border-2 rounded bg-blue-300 ";
+        var saveCity = newButton.id;
+        searchHistory.appendChild(newButton);
     }
+
+    searchHistory.addEventListener('click', (e) => { //add a wrapper listener to all buttons in the search history
+        const isButton = e.target.nodeName === 'BUTTON';
+        if (!isButton) {
+            return;
+        }
+        console.log("BUTTON CLICKED! " + e.target.id);
+        document.getElementById('citynamefield').value = e.target.id;
+        getCity();
+    })
 }
 
 function getCity() {
@@ -38,17 +47,14 @@ function getCity() {
     var cityName = document.getElementById('citynamefield').value;
     var coords = {};
     var geoURL = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityName + ",US&appid=fa580f314369e2c9d603e57405e54a92";
-    console.log("City searched: " + cityName);
 
     fetch(geoURL) //find the city information based on lon and lat
         .then(function (response) {
             return response.json();
         })
         .then(function (data) {
-            console.log(data);
             coords.lat = data[0].lat;
             coords.lon = data[0].lon
-            console.log(coords);
 
             var cityURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lon}&appid=fa580f314369e2c9d603e57405e54a92&units=imperial`;
             fetch(cityURL)
@@ -56,24 +62,20 @@ function getCity() {
                     return res.json();
                 })
                 .then(function (data) {
-                    console.log(data);
 
                     var newTable = document.createElement("table");
                     var tableRow = document.createElement('tr');
                     var tableData = document.createElement('td');
                     
                     
-                    console.log(data.list[0].main);
 
                     currentTemp.textContent = "Temperature: " + data.list[0].main.temp + " Fahrenheit";
                     currentWind.textContent = "Wind: " + data.list[0].wind.speed + "MPH";
                     currentHumid.textContent = "Humidity: " + data.list[0].main.humidity + "%";
 
                     cityInfo.textContent = cityName + " " + data.list[0].dt_txt;
-                    console.log(cityInfo);
                     
                     var currentTimestamp = data.list[0].dt_txt.split(" ");
-                    console.log(currentTimestamp);
 
                     for (var i = 0; i < data.list.length; i++) { //go through the weather data by date
                         let dateData = data.list[i].dt_txt.split(" ");
@@ -82,7 +84,6 @@ function getCity() {
                             continue;
                         } else { //note down the data
                             currentTimestamp = data.list[i].dt_txt.split(" ");
-                            console.log(dateData);
 
                             var dayTemp = document.createTextNode(data.list[i].main.temp + " Fahrenheit");
                             var dayWind = document.createTextNode(data.list[i].wind.speed + "MPH");
@@ -114,13 +115,18 @@ function getCity() {
                 })
         })
 
+    
+    for (i = 0; i < cityHistory.length; i++) {
+        if (cityName == cityHistory[i]) {
+            return;
+        }
+    }
+
     cityHistory.push(cityName);
     localStorage.setItem("cityWeatherHistory", cityHistory);
     
-    
+    document.getElementById('citynamefield').value = "";
 
 }
-
-//console.log("Hello")
 
 submitBtn.addEventListener('click', getCity);
